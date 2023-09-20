@@ -46,12 +46,6 @@ function csvToObjects(csv) {
     let row = csvSplit(csvRows[i]);
     for (let j = 0, max = row.length; j < max; j++) {
       thisObject[propertyNames[j]] = row[j];
-      // BELOW 4 LINES WILL CONVERT DATES IN THE "ENROLLED" COLUMN TO JS DATE OBJECTS
-      // if (propertyNames[j] === "Enrolled") {
-      //   thisObject[propertyNames[j]] = new Date(row[j]);
-      // } else {
-      //   thisObject[propertyNames[j]] = row[j];
-      // }
     }
     objects.push(thisObject);
   }
@@ -113,17 +107,7 @@ const arcadelayer = L.layerGroup();
 // Create markers dynamically and add them to layers
 
 for(let i=0; i < sheet.length; i++) {
-  console.log(sheet)
-    const category = sheet[i]['category'];
-    const marker = L.marker([sheet[i]['lat'], sheet[i]['long']], {time: sheet[i]['date']})
-    marker.bindPopup(`<p>Time : ${sheet[i]['date']}<br /> Position : ${sheet[i]['lat']}, ${sheet[i]['long']}</p>`)
-    marker_list.push(marker)
-    // Add to each layer automatically here
-    if(category == 'game') {
-      gamelayer.addLayer(marker)
-    } else if (category == 'arcade') {
-      arcadelayer.addLayer(marker)
-    }
+  createMarker(sheet, marker_list, i, gamelayer, arcadelayer)
 }
 
 
@@ -181,3 +165,56 @@ map.on('overlayremove', function(e) {
 
 
 //////////////////// ADD OPEN CAGE HERE ///////////////////////////
+
+// Create MArkers and Popups
+
+function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
+
+  const title = sheet[i]['Name'];
+  const country = sheet[i]['Country'];
+  const date = sheet[i]['Date'];
+  const description = sheet[i]['Description'];
+  const platform1 = sheet[i]['Platforms1'];
+  const platform2 = sheet[i]['Platforms2'];
+  const platform3 = sheet[i]['Platforms3'];
+  const platform4 = sheet[i]['Platforms4'];
+  const genres = sheet[i]['Genres'];
+  const studio = sheet[i]['Studio'];
+  const publisher = sheet[i]['Publisher'];
+  const programmer = sheet[i]['Programmer'];
+  const source1 = sheet[i]['Source1'];
+  const source2 = sheet[i]['Source2'];
+  const lat = sheet[i]['Lat'];
+  const long = sheet[i]['Long'];
+  const category = sheet[i]['Category']
+  const sgg = sheet[i]['SGG'];
+  
+  let popup_text = ``
+  
+  const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg]
+  const params_name = ["country","date","description", "platform1", "platform2", "platform3", "platform4", "genres", "studio", "publisher", "programmer", "source1", "source2", "lat", "long", "sgg"]
+  
+  if (title) {
+      popup_text += `<p class="popup_title">${title}</p>`
+  }
+  
+  for(let i=0; i < params.length; i++) {
+      if (params[i]) {
+          popup_text += `<p>${params_name[i]} : ${params[i]}</p>`
+      }
+  }
+  
+  const marker = L.marker([lat, long], {time: date})
+  
+  marker.bindPopup(popup_text)
+  
+  marker_list.push(marker)
+  
+  // Add to each layer automatically here
+  if(category == 'game') {
+      gamelayer.addLayer(marker)
+      } else if (category == 'arcade') {
+      arcadelayer.addLayer(marker)
+      }
+  
+  }
