@@ -2,7 +2,7 @@
 
 ## Description
 
-An interactive map used to display data gathered during the CH Ludens Sinergia project.
+An interactive map used to visualize data gathered during the CH Ludens Sinergia project.
 
 ![Dashboard view](/img/ch_ludens_logo.png)
 

@@ -64,7 +64,6 @@ function csvSplit(row) {
 
 // Create map, layers, markers and slider
 
-
 function main() {
 
 // Map setup
@@ -98,48 +97,39 @@ const customIcon = new LeafIcon({iconUrl: "img/icon.png"})
 
 // Markers should be stored in json format and then created dynamically
 
-const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
-const marker2 = L.marker([51.6, -0.09], {time: "2013-01-22 10:00:26+01"});
-const marker3 = L.marker([51.7, -0.09], {time: "2013-01-22 10:03:29+01"});
+// const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
 
-const marker4 = L.marker([51.8, -0.09], {time: "2013-01-22 10:42:26+01"});
-const marker5 = L.marker([51.9, -0.09], {time: "2013-01-22 10:53:26+01"});
-const marker6 = L.marker([52, -0.09], {time: "2013-01-22 11:03:29+01"});
 
 // Markers should be stored in this array each time they are created
 
-let marker_list = [marker1, marker2, marker3, marker4, marker5, marker6]
+let marker_list = []
 
 // Create empty layer
 
-const layerdynamic = L.layerGroup()
+const gamelayer = L.layerGroup();
+
+const arcadelayer = L.layerGroup();
 
 // Create markers dynamically and add them to layers
 
 for(let i=0; i < sheet.length; i++) {
   console.log(sheet)
+    const category = sheet[i]['category'];
     const marker = L.marker([sheet[i]['lat'], sheet[i]['long']], {time: sheet[i]['date']})
+    marker.bindPopup(`<p>Time : ${sheet[i]['date']}<br /> Position : ${sheet[i]['lat']}, ${sheet[i]['long']}</p>`)
     marker_list.push(marker)
     // Add to each layer automatically here
-    layerdynamic.addLayer(marker)
+    if(category == 'game') {
+      gamelayer.addLayer(marker)
+    } else if (category == 'arcade') {
+      arcadelayer.addLayer(marker)
+    }
 }
-
-// Auton binds Popup to each markers
-
-for (let i =0; i < marker_list.length ; i++) {
-    marker_list[i].bindPopup(`<p>Time : ${marker_list[i].options.time}<br /> Position : ${marker_list[i].getLatLng()}</p>`)
-}
-
-// Marker Layers
-
-const testlayer = L.layerGroup([marker1, marker2, marker3]);
-
-const testlayer2 = L.layerGroup([marker4, marker5, marker6]);
 
 
 // Layer for the slider
 
-const sliderlayer = L.layerGroup([marker1, marker2, marker3, marker4, marker5, marker6])
+const sliderlayer = L.layerGroup(marker_list)
 
 // Base layers
 
@@ -152,10 +142,9 @@ const baselayer = {
 // Marker layer group
 
 const overlays = {
-    "Layer test": testlayer,
-    "Layer test 2": testlayer2,
+    "Game test": gamelayer,
+    "Arcade test": arcadelayer,
     "Slider layer": sliderlayer,
-    "Layer dynamic": layerdynamic
 };
 
 
