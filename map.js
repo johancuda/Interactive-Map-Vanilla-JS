@@ -3,14 +3,17 @@ const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
 // sheetName is the name of the TAB in your spreadsheet
 const sheetName = encodeURIComponent("Sheet1");
 const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+getSheet()
+let sheet = []
 
+ async function getSheet() {
 
- function getSheet() {
-
-  fetch(sheetURL)
+  await fetch(sheetURL)
   .then((response) => response.text())
   .then((csvText) => handleResponse(csvText));
   //ajouter main ici?
+  main()
+
 
 }
 
@@ -46,9 +49,8 @@ function csvToObjects(csv) {
 function csvSplit(row) {
   return row.split(",").map((val) => val.substring(1, val.length - 1));
 }
-(async function main() {
+function main() {
 
-  let sheet = await getSheet()
 // Map setup
 
 const map = L.map('map').setView([51.505, -0.09], 13);
@@ -100,7 +102,7 @@ const layerdynamic = L.layerGroup()
 for(let i=0; i < sheet.length; i++) {
   console.log(sheet)
     const marker = L.marker([sheet[i]['lat'], sheet[i]['long']], {time: sheet[i]['date']})
-    marker_list.append(marker)
+    marker_list.push(marker)
     layerdynamic.addLayer(marker)
 }
 
@@ -166,4 +168,4 @@ map.on('overlayremove', function(e) {
 })
 
 
-})()
+}
