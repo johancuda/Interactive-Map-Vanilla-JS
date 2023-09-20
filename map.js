@@ -188,3 +188,7 @@ map.on('overlayremove', function(e) {
 
 
 }
+
+
+
+//////////////////// ADD OPEN CAGE HERE ///////////////////////////
