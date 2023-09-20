@@ -4,13 +4,17 @@ const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
 const sheetName = encodeURIComponent("Sheet1");
 const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 
-let sheet = null
 
-fetch(sheetURL)
+ function getSheet() {
+
+  fetch(sheetURL)
   .then((response) => response.text())
   .then((csvText) => handleResponse(csvText));
+  //ajouter main ici?
 
-function handleResponse(csvText) {
+}
+
+ function handleResponse(csvText) {
   let sheetObjects = csvToObjects(csvText);
   // sheetObjects is now an Array of Objects
   console.log(sheetObjects);
@@ -42,7 +46,9 @@ function csvToObjects(csv) {
 function csvSplit(row) {
   return row.split(",").map((val) => val.substring(1, val.length - 1));
 }
+(async function main() {
 
+  let sheet = await getSheet()
 // Map setup
 
 const map = L.map('map').setView([51.505, -0.09], 13);
@@ -81,14 +87,22 @@ const marker4 = L.marker([51.8, -0.09], {time: "2013-01-22 10:42:26+01"});
 const marker5 = L.marker([51.9, -0.09], {time: "2013-01-22 10:53:26+01"});
 const marker6 = L.marker([52, -0.09], {time: "2013-01-22 11:03:29+01"});
 
-for(let i=0; i < sheetObjects.length; i++) {
-    const marker = L.marker([sheetObjects[i]])
-}
-
-
 // Markers should be stored in this array each time they are created
 
 let marker_list = [marker1, marker2, marker3, marker4, marker5, marker6]
+
+// Create markers dynamically
+
+
+const layerdynamic = L.layerGroup()
+
+
+for(let i=0; i < sheet.length; i++) {
+  console.log(sheet)
+    const marker = L.marker([sheet[i]['lat'], sheet[i]['long']], {time: sheet[i]['date']})
+    marker_list.append(marker)
+    layerdynamic.addLayer(marker)
+}
 
 // Auton binds Popup to each markers
 
@@ -100,6 +114,8 @@ for (let i =0; i < marker_list.length ; i++) {
 const testlayer = L.layerGroup([marker1, marker2, marker3]);
 
 const testlayer2 = L.layerGroup([marker4, marker5, marker6]);
+
+
 
 // Layer for the slider
 const sliderlayer = L.layerGroup([marker1, marker2, marker3, marker4, marker5, marker6])
@@ -117,7 +133,8 @@ const baselayer = {
 const overlays = {
     "Layer test": testlayer,
     "Layer test 2": testlayer2,
-    "Slider layer": sliderlayer
+    "Slider layer": sliderlayer,
+    "Layer dynamic": layerdynamic
 };
 
 
@@ -149,3 +166,4 @@ map.on('overlayremove', function(e) {
 })
 
 
+})()
