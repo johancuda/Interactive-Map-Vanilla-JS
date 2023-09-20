@@ -12,13 +12,34 @@ This map is designed to be hosted on a AWS S3 and then loaded on a [Webflow](htt
 
 ## Data
 
-This project uses a Goggle Sheet as fake database to store the infos regarding the markers on the map.
+Data are fetched from a Google Sheet and then used to create de map dynamically. Each entry of the sheet represents a point with the following fields:
 
-- describe data here
+- "Country"
+- "Date"
+- "Description"
+- "Platform 1"
+- "Platform 2"
+- "Platform 3"
+- "Platform 4"
+- "Genres"
+- "Studio"
+- "Publisher"
+- "Programmer"
+- "Source 1"
+- "Source 2"
+- "Lat"
+- "Long"
+- "SGG"
+
+Popups are then created when the fields are not empty.
 
 ## Tools
 
+This map was created using the [Leaflet.js](https://leafletjs.com/) library. THe time slider was created using [Falke-design's code](https://github.com/Falke-Design/LeafletSlider) forked from [this repo](https://github.com/dwilhelm89/LeafletSlider). The [OpenCage geocoding API](https://opencagedata.com/tutorials/geocode-in-javascript) is currently being implemented.
+
 ## Interface
+
+The interface is composed of a control menu on the right allowing the user to switch between different Tile Layers (for better visualization) and to add and remove different layers from the map as well. The last layer, called "Slider layer" allows the user 
 
 ## Use
 

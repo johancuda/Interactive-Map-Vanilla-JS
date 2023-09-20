@@ -32,7 +32,6 @@ getSheet()
   // sheetObjects is now an Array of Objects
   console.log(sheetObjects);
   sheet = sheetObjects
-  // ADD CODE HERE
 }
 
 // Transforms csv file to JS Object
@@ -135,6 +134,8 @@ const overlays = {
 
 const layerControl = L.control.layers(baselayer, overlays).addTo(map)
 
+// Create slider. See: https://github.com/Falke-Design/LeafletSlider
+
 const sliderControl = L.control.sliderControl({layer:sliderlayer, range: true});
 
 // To make slider appear/disappear with the right layer
@@ -197,7 +198,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   // List of parameters and their names
   
   const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg]
-  const params_name = ["country","date","description", "platform1", "platform2", "platform3", "platform4", "genres", "studio", "publisher", "programmer", "source1", "source2", "lat", "long", "sgg"]
+  const params_name = ["Country","Date","Description", "Platform 1", "Platform 2", "Platform 3", "Platform 4", "Genres", "Studio", "Publisher", "Programmer", "Source 1", "Source 2", "Lat", "Long", "SGG"]
   
   // Create Popup entry only if data exists
 
@@ -222,7 +223,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   marker_list.push(marker)
   
   // Add to each layer automatically here
-  
+
   if(category == 'game') {
       gamelayer.addLayer(marker)
       } else if (category == 'arcade') {
