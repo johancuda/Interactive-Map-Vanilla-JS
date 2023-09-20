@@ -1,21 +1,31 @@
 // sheetID you can find in the URL of your spreadsheet after "spreadsheet/d/"
+
 const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
+
 // sheetName is the name of the TAB in your spreadsheet
+
 const sheetName = encodeURIComponent("Sheet1");
 const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
-getSheet()
 let sheet = []
+
+// Pipeline
+
+getSheet()
+
+// Fetch data from Google sheet and when it's done, calling the main() function. The code to extract data from a Google Sheet was taken from here: https://github.com/theotrain/load-google-sheet-as-csv-with-js. Thank you theotrain :)
+
 
  async function getSheet() {
 
   await fetch(sheetURL)
   .then((response) => response.text())
   .then((csvText) => handleResponse(csvText));
-  //ajouter main ici?
   main()
 
 
 }
+
+// Store sheet in the "sheet" variable
 
  function handleResponse(csvText) {
   let sheetObjects = csvToObjects(csvText);
@@ -24,6 +34,8 @@ let sheet = []
   sheet = sheetObjects
   // ADD CODE HERE
 }
+
+// Transforms csv file to JS Object
 
 function csvToObjects(csv) {
   const csvRows = csv.split("\n");
@@ -49,6 +61,10 @@ function csvToObjects(csv) {
 function csvSplit(row) {
   return row.split(",").map((val) => val.substring(1, val.length - 1));
 }
+
+// Create map, layers, markers and slider
+
+
 function main() {
 
 // Map setup
@@ -68,7 +84,7 @@ const CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_al
 	maxZoom: 20
 });
 
-//Custom icon
+// Custom icon
 
 const LeafIcon = L.Icon.extend({
     options: {
@@ -81,6 +97,7 @@ const LeafIcon = L.Icon.extend({
 const customIcon = new LeafIcon({iconUrl: "img/icon.png"})
 
 // Markers should be stored in json format and then created dynamically
+
 const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
 const marker2 = L.marker([51.6, -0.09], {time: "2013-01-22 10:00:26+01"});
 const marker3 = L.marker([51.7, -0.09], {time: "2013-01-22 10:03:29+01"});
@@ -93,16 +110,17 @@ const marker6 = L.marker([52, -0.09], {time: "2013-01-22 11:03:29+01"});
 
 let marker_list = [marker1, marker2, marker3, marker4, marker5, marker6]
 
-// Create markers dynamically
-
+// Create empty layer
 
 const layerdynamic = L.layerGroup()
 
+// Create markers dynamically and add them to layers
 
 for(let i=0; i < sheet.length; i++) {
   console.log(sheet)
     const marker = L.marker([sheet[i]['lat'], sheet[i]['long']], {time: sheet[i]['date']})
     marker_list.push(marker)
+    // Add to each layer automatically here
     layerdynamic.addLayer(marker)
 }
 
@@ -113,13 +131,14 @@ for (let i =0; i < marker_list.length ; i++) {
 }
 
 // Marker Layers
+
 const testlayer = L.layerGroup([marker1, marker2, marker3]);
 
 const testlayer2 = L.layerGroup([marker4, marker5, marker6]);
 
 
-
 // Layer for the slider
+
 const sliderlayer = L.layerGroup([marker1, marker2, marker3, marker4, marker5, marker6])
 
 // Base layers
