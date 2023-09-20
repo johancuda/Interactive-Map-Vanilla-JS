@@ -1,6 +1,53 @@
+// sheetID you can find in the URL of your spreadsheet after "spreadsheet/d/"
+const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
+// sheetName is the name of the TAB in your spreadsheet
+const sheetName = encodeURIComponent("Sheet1");
+const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 
+let sheet = null
+
+fetch(sheetURL)
+  .then((response) => response.text())
+  .then((csvText) => handleResponse(csvText));
+
+function handleResponse(csvText) {
+  let sheetObjects = csvToObjects(csvText);
+  // sheetObjects is now an Array of Objects
+  console.log(sheetObjects);
+  sheet = sheetObjects
+  // ADD CODE HERE
+}
+
+function csvToObjects(csv) {
+  const csvRows = csv.split("\n");
+  const propertyNames = csvSplit(csvRows[0]);
+  let objects = [];
+  for (let i = 1, max = csvRows.length; i < max; i++) {
+    let thisObject = {};
+    let row = csvSplit(csvRows[i]);
+    for (let j = 0, max = row.length; j < max; j++) {
+      thisObject[propertyNames[j]] = row[j];
+      // BELOW 4 LINES WILL CONVERT DATES IN THE "ENROLLED" COLUMN TO JS DATE OBJECTS
+      // if (propertyNames[j] === "Enrolled") {
+      //   thisObject[propertyNames[j]] = new Date(row[j]);
+      // } else {
+      //   thisObject[propertyNames[j]] = row[j];
+      // }
+    }
+    objects.push(thisObject);
+  }
+  return objects;
+}
+
+function csvSplit(row) {
+  return row.split(",").map((val) => val.substring(1, val.length - 1));
+}
+
+// Map setup
 
 const map = L.map('map').setView([51.505, -0.09], 13);
+
+// Tile layers setup
 
 const mapLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -14,6 +61,7 @@ const CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_al
 });
 
 //Custom icon
+
 const LeafIcon = L.Icon.extend({
     options: {
         iconSize:     [35, 40],
@@ -33,6 +81,11 @@ const marker4 = L.marker([51.8, -0.09], {time: "2013-01-22 10:42:26+01"});
 const marker5 = L.marker([51.9, -0.09], {time: "2013-01-22 10:53:26+01"});
 const marker6 = L.marker([52, -0.09], {time: "2013-01-22 11:03:29+01"});
 
+for(let i=0; i < sheetObjects.length; i++) {
+    const marker = L.marker([sheetObjects[i]])
+}
+
+
 // Markers should be stored in this array each time they are created
 
 let marker_list = [marker1, marker2, marker3, marker4, marker5, marker6]
@@ -43,7 +96,7 @@ for (let i =0; i < marker_list.length ; i++) {
     marker_list[i].bindPopup(`<p>Time : ${marker_list[i].options.time}<br /> Position : ${marker_list[i].getLatLng()}</p>`)
 }
 
-
+// Marker Layers
 const testlayer = L.layerGroup([marker1, marker2, marker3]);
 
 const testlayer2 = L.layerGroup([marker4, marker5, marker6]);
@@ -59,7 +112,7 @@ const baselayer = {
 
 }
 
-// Marker layers
+// Marker layer group
 
 const overlays = {
     "Layer test": testlayer,
@@ -68,7 +121,7 @@ const overlays = {
 };
 
 
-
+// Add groups to map
 
 const layerControl = L.control.layers(baselayer, overlays).addTo(map)
 
@@ -94,3 +147,5 @@ map.on('overlayremove', function(e) {
     map.removeControl(sliderControl)
     }
 })
+
+
