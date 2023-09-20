@@ -166,7 +166,7 @@ map.on('overlayremove', function(e) {
 
 //////////////////// ADD OPEN CAGE HERE ///////////////////////////
 
-// Create MArkers and Popups
+// Create Markers and Popups
 
 function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
