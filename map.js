@@ -89,7 +89,6 @@ const LeafIcon = L.Icon.extend({
 
 const customIcon = new LeafIcon({iconUrl: "img/icon.png"})
 
-// Markers should be stored in json format and then created dynamically
 
 // const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
 
@@ -170,6 +169,8 @@ map.on('overlayremove', function(e) {
 
 function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
+  // Get parameters
+
   const title = sheet[i]['Name'];
   const country = sheet[i]['Country'];
   const date = sheet[i]['Date'];
@@ -188,12 +189,18 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   const long = sheet[i]['Long'];
   const category = sheet[i]['Category']
   const sgg = sheet[i]['SGG'];
+
+  // Setup empty Popup texte
   
   let popup_text = ``
+
+  // List of parameters and their names
   
   const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg]
   const params_name = ["country","date","description", "platform1", "platform2", "platform3", "platform4", "genres", "studio", "publisher", "programmer", "source1", "source2", "lat", "long", "sgg"]
   
+  // Create Popup entry only if data exists
+
   if (title) {
       popup_text += `<p class="popup_title">${title}</p>`
   }
@@ -203,14 +210,19 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
           popup_text += `<p>${params_name[i]} : ${params[i]}</p>`
       }
   }
+
+  // Create marker and binds Popup
   
   const marker = L.marker([lat, long], {time: date})
   
   marker.bindPopup(popup_text)
+
+  // Adds marker to marker_list variable
   
   marker_list.push(marker)
   
   // Add to each layer automatically here
+  
   if(category == 'game') {
       gamelayer.addLayer(marker)
       } else if (category == 'arcade') {
