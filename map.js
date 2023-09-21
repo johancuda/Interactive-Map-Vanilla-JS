@@ -7,7 +7,6 @@ const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
 const sheetName = encodeURIComponent("Sheet1");
 const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 let sheet = []
-
 // Pipeline
 
 getSheet()
@@ -163,9 +162,6 @@ map.on('overlayremove', function(e) {
 }
 
 
-
-//////////////////// ADD OPEN CAGE HERE ///////////////////////////
-
 // Create Markers and Popups
 
 function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
@@ -189,6 +185,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   const lat = sheet[i]['Lat'];
   const long = sheet[i]['Long'];
   const category = sheet[i]['Category']
+  const address = sheet[i]['Address'];
   const sgg = sheet[i]['SGG'];
 
   // Setup empty Popup texte
@@ -205,6 +202,17 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   if (title) {
       popup_text += `<p class="popup_title">${title}</p>`
   }
+
+/*   if(address) {
+    position = await forwardGeocoding(address)
+    console.log(forwardGeocoding(address))
+    //lat = position.lat
+    //long = position.lng
+    popup_text += `Address : ${address}`
+
+
+  } */
+
   
   for(let i=0; i < params.length; i++) {
       if (params[i]) {
@@ -231,3 +239,30 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
       }
   
   }
+
+
+
+// Works but not in a function
+
+function test(query) {
+  opencage
+  .geocode({ q: query, key: '5bdd3087b76540c9a5ed866dad8aa271' })
+  .then((data) => {
+    if (data.status.code === 200 && data.results.length > 0) {
+      const place = data.results[0];
+      console.log(place.formatted);
+      console.log(place.geometry);
+      console.log(place.annotations.timezone.name);
+    } else {
+      console.log('Status', data.status.message);
+      console.log('total_results', data.total_results);
+    }
+  })
+  .catch((error) => {
+    console.log('Error', error.message);
+    if (error.status.code === 402) {
+      console.log('hit free trial daily limit');
+      console.log('become a customer: https://opencagedata.com/pricing');
+    }
+  });
+}
