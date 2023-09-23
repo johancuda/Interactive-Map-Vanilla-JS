@@ -7,21 +7,18 @@ const sheetId = "1QqnT9S7Cd-PPdIHZfsi0KUhOwwRDyGaI_8hUhuqfFoM";
 const sheetName = encodeURIComponent("Sheet1");
 const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 let sheet = []
+
 // Pipeline
 
 getSheet()
 
 // Fetch data from Google sheet and when it's done, calling the main() function. The code to extract data from a Google Sheet was taken from here: https://github.com/theotrain/load-google-sheet-as-csv-with-js. Thank you theotrain :)
-
-
- async function getSheet() {
-
+ 
+async function getSheet() {
   await fetch(sheetURL)
   .then((response) => response.text())
   .then((csvText) => handleResponse(csvText));
   main()
-
-
 }
 
 // Store sheet in the "sheet" variable
@@ -203,14 +200,13 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
       popup_text += `<p class="popup_title">${title}</p>`
   }
 
+// Doesn't work at the moment, see comment below.
 /*   if(address) {
     position = await forwardGeocoding(address)
     console.log(forwardGeocoding(address))
     //lat = position.lat
     //long = position.lng
     popup_text += `Address : ${address}`
-
-
   } */
 
   
@@ -242,7 +238,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
 
 
-// Works but not in a function
+// Works alone but not when assigned to a variable : couldn't figure out how to use async/await to wait for the api response before returning the value of the function
 
 function test(query) {
   opencage

@@ -39,7 +39,7 @@ This map was created using the [Leaflet.js](https://leafletjs.com/) library. The
 
 ## Interface
 
-The interface is composed of a control menu on the right allowing the user to switch between different Tile Layers (for better visualization) and to add and remove different layers from the map as well. The last layer, called "Slider layer" allows the user 
+The interface is composed of a control menu on the right allowing the user to switch between different Tile Layers (for better visualization) and to add and remove different layers from the map as well. The last layer, called "Slider layer" allows the user to visualize the markers rom a chronological perspective.
 
 
 ## Authors
