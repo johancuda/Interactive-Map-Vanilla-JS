@@ -122,8 +122,16 @@ const baselayer = {
 const overlays = {
     "Game test": gamelayer,
     "Arcade test": arcadelayer,
-    "Slider layer": sliderlayer,
+    "Slider layer": sliderlayer, // has to stay last in the list !!!
 };
+
+// Add clustering
+mcgLayerSupportGroup = L.markerClusterGroup.layerSupport()
+mcgLayerSupportGroup.checkIn(gamelayer)
+mcgLayerSupportGroup.checkIn(arcadelayer)
+mcgLayerSupportGroup.checkIn(sliderlayer)
+mcgLayerSupportGroup.addTo(map)
+
 
 
 // Add groups to map
@@ -138,11 +146,21 @@ const sliderControl = L.control.sliderControl({layer:sliderlayer, range: true});
 
 map.on('overlayadd', function(e) {
     let layer_name = e.name
+    let checkboxes = document.querySelectorAll('[type = "checkbox"]')
 
     if (layer_name == "Slider layer"){
+
+      // Remove other overlays when slider layer is activated
+        console.log(checkboxes)
+        for(let i =0; i<checkboxes.length-1; i++) {
+          checkboxes[i].checked = false
+        }
         map.addControl(sliderControl);
         sliderControl.startSlider();
-
+      // needs correction !!
+    } else if (layer_name == "Game test" || layer_name == "Arcade test") {
+      let slider = checkboxes[checkboxes.length-1]
+      slider.checked = false
     }
 
 })
