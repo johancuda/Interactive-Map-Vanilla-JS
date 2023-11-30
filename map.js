@@ -219,13 +219,13 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   }
 
 // Doesn't work at the moment, see comment below.
-/*   if(address) {
-    position = await forwardGeocoding(address)
-    console.log(forwardGeocoding(address))
+  if(address) {
+    position = forwardGeocoding(address)
+    console.log(position)
     //lat = position.lat
     //long = position.lng
     popup_text += `Address : ${address}`
-  } */
+  }
 
   
   for(let i=0; i < params.length; i++) {
@@ -258,8 +258,8 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
 // Works alone but not when assigned to a variable : couldn't figure out how to use async/await to wait for the api response before returning the value of the function
 
-function test(query) {
-  opencage
+async function forwardGeocoding(query) {
+  await opencage
   .geocode({ q: query, key: '5bdd3087b76540c9a5ed866dad8aa271' })
   .then((data) => {
     if (data.status.code === 200 && data.results.length > 0) {
@@ -280,3 +280,8 @@ function test(query) {
     }
   });
 }
+
+
+
+// TODO: create club category and add fields in db for clubs and arcade
+// add people as well?
