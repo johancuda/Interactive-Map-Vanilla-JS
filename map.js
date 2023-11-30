@@ -57,7 +57,7 @@ function main() {
 
 // Map setup
 
-const map = L.map('map').setView([51.505, -0.09], 13);
+const map = L.map('map').setView([46.519962, 6.633597], 9);
 
 // Tile layers setup
 
@@ -256,7 +256,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
 
 
-// Works alone but not when assigned to a variable : couldn't figure out how to use async/await to wait for the api response before returning the value of the function
+// Transforms real addresses into coordinates
 
 async function forwardGeocoding(query) {
   await opencage
@@ -283,5 +283,31 @@ async function forwardGeocoding(query) {
 
 
 
-// TODO: create club category and add fields in db for clubs and arcade
-// add people as well?
+/* TODO: 
+- create club category and add fields in db for clubs and arcade
+- add people as well?
+- standardize dates in google sheet to prevent problems with slider 
+*/
+
+
+
+// Created with Chat GPT to generate random coordinates for games
+/* function generateRandomCoordinates() {
+  // Define the latitude and longitude range for Switzerland
+  const minLat = 45.8174;
+  const maxLat = 47.8085;
+  const minLng = 5.9559;
+  const maxLng = 10.4922;
+
+  // Generate random coordinates
+  const randomLat = Math.random() * (maxLat - minLat) + minLat;
+  const randomLng = Math.random() * (maxLng - minLng) + minLng;
+
+  // Return the coordinates as an object
+  return [randomLat, randomLng];
+}
+let tab = []
+for(let i =0; i<103; i++) {
+  tab.push(generateRandomCoordinates())
+}
+console.log(tab) */
