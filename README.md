@@ -8,7 +8,7 @@ An interactive map used to visualize data gathered during the [CH Ludens](https:
 
 ## Problematic
 
-This map is designed to be hosted on a AWS S3 and then loaded on a [Webflow](https://webflow.com/) page (in this case, the CH Ludens page).
+This map is designed to be hosted on a [Webflow](https://webflow.com/) page (in this case, the CH Ludens page).
 
 ## Data
 
@@ -32,6 +32,9 @@ Data are fetched from a Google Sheet and then used to create de map dynamically.
 - "Category"
 - "Address"
 - "SGG"
+- "Duration"
+- "Interviewer"
+- "Type of interview"
 
 Popups are then created when the fields are not empty.
 
@@ -46,7 +49,7 @@ The interface is composed of a control menu on the right allowing the user to sw
 
 ## Authors
 
-Developped by Johan Cuda, student assistant on the CH Ludens project, with the help of the Javacsript community (see source code for detailed citations).
+Developped by Johan Cuda, student assistant on the CH Ludens project, with the help of the Javacsript community (see source code for detailed citations) and the help of ChatGPT.
 
 ## Credits
 
