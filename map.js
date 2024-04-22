@@ -57,7 +57,7 @@ function main() {
 
 // Map setup
 
-const map = L.map('map').setView([46.519962, 6.633597], 9);
+const map = L.map('map').setView([46.822657202492266, 8.405580649422742], 8);
 
 // Tile layers setup
 
@@ -77,16 +77,21 @@ const CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_al
 const LeafIcon = L.Icon.extend({
     options: {
         iconSize:     [35, 40],
-        iconAnchor:   [22, 94],
-        popupAnchor:  [-3, -76]
     }
 });
+/*
+const interviewIcon = new LeafIcon({iconUrl: "img/interview_logo.png"})
 
-const customIcon = new LeafIcon({iconUrl: "img/icon.png"})
+const gameIcon = new LeafIcon({iconUrl: "img/game_logo.png"})
 
-// To use the icon:
-// const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
+const arcadeIcon = new LeafIcon({iconUrl: "img/arcade_logo.png"})
+*/
+const icons = {
+  interviewIcon: new LeafIcon({iconUrl: "img/interview_logo.png"}),
+  gameIcon : new LeafIcon({iconUrl: "img/game_logo.png"}),
+  arcadeIcon : new LeafIcon({iconUrl: "img/arcade_logo.png"})
 
+}
 
 // Markers should be stored in this array each time they are created
 
@@ -98,10 +103,12 @@ const gamelayer = L.layerGroup();
 
 const arcadelayer = L.layerGroup();
 
+const interviewlayer = L.layerGroup()
+
 // Create markers dynamically and add them to layers
 
 for(let i=0; i < sheet.length; i++) {
-  createMarker(sheet, marker_list, i, gamelayer, arcadelayer)
+  createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewlayer, icons)
 }
 
 
@@ -122,6 +129,7 @@ const baselayer = {
 const overlays = {
     "Game test": gamelayer,
     "Arcade test": arcadelayer,
+    "Interview layer": interviewlayer,
     "Slider layer": sliderlayer, // has to stay last in the list !!!
 };
 
@@ -129,6 +137,7 @@ const overlays = {
 mcgLayerSupportGroup = L.markerClusterGroup.layerSupport()
 mcgLayerSupportGroup.checkIn(gamelayer)
 mcgLayerSupportGroup.checkIn(arcadelayer)
+mcgLayerSupportGroup.checkIn(interviewlayer)
 mcgLayerSupportGroup.checkIn(sliderlayer)
 mcgLayerSupportGroup.addTo(map)
 
@@ -158,7 +167,7 @@ map.on('overlayadd', function(e) {
         map.addControl(sliderControl);
         sliderControl.startSlider();
       // needs correction !!
-    } else if (layer_name == "Game test" || layer_name == "Arcade test") {
+    } else if (layer_name == "Game test" || layer_name == "Arcade test" || layer_name == "Interview layer") {
       let slider = checkboxes[checkboxes.length-1]
       slider.checked = false
     }
@@ -179,7 +188,7 @@ map.on('overlayremove', function(e) {
 
 // Create Markers and Popups
 
-function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
+function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewlayer, icons) {
 
   // Get parameters
 
@@ -202,6 +211,9 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   const category = sheet[i]['Category'];
   const address = sheet[i]['Address'];
   const sgg = sheet[i]['SGG'];
+  const duration = sheet[i]['Duration']
+  const interviewer = sheet[i]['Interviewer']
+  const interview_type = sheet[i]['Type of interview']
 
   // Setup empty Popup texte
   
@@ -209,8 +221,8 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 
   // List of parameters and their names
   
-  const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg]
-  const params_name = ["Country","Date","Description", "Platform 1", "Platform 2", "Platform 3", "Platform 4", "Genres", "Studio", "Publisher", "Programmer", "Source 1", "Source 2", "Lat", "Long", "SGG"]
+  const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg, duration, interviewer, interview_type]
+  const params_name = ["Country","Date","Description", "Platform 1", "Platform 2", "Platform 3", "Platform 4", "Genres", "Studio", "Publisher", "Programmer", "Source 1", "Source 2", "Lat", "Long", "SGG", "Duration", "Interviewer", "Type of interview"]
   
   // Create Popup entry only if data exists
 
@@ -221,14 +233,11 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
 // creates marker with address or not
   if(address) {
     console.log(address)
-    forwardGeocoding(address).then((place) => {
-      //const position = geometry
+    forwardGeocoding(address, sheet).then((place) => {
       if (place) {
       lat = place.geometry.lat
-      console.log(lat)
       long = place.geometry.lng
-      console.log(long)
-      createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer)
+      createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
       }
       else {
         console.log("Problème d'adresse")
@@ -236,12 +245,12 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
     })
     popup_text += `Address : ${address}`
   } else {
-    createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer)
+    createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
   }
 
 // Creates singular marker and popup
 
-function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer) {
+function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons) {
 
   // Create popup text
   for(let i=0; i < params.length; i++) {
@@ -250,8 +259,17 @@ function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, 
     }
   }
 
-  // Create marker and binds Popup
-  const marker = L.marker([lat, long], {time: date})
+  // Create variable for marker
+   let marker;
+
+  // Create marker and binds Popup (with different icon if interview)
+  if (category == 'interview') {
+    marker = L.marker([lat, long], {time: date, icon: icons.interviewIcon})
+  } else if( category == 'game') {
+    marker = L.marker([lat, long], {time: date, icon: icons.gameIcon})
+  } else if (category == 'arcade') {
+    marker = L.marker([lat, long], {time: date, icon: icons.arcadeIcon})
+  }
 
   marker.bindPopup(popup_text)
 
@@ -265,21 +283,23 @@ function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, 
       gamelayer.addLayer(marker)
       } else if (category == 'arcade') {
       arcadelayer.addLayer(marker)
+      } else if (category == 'interview') {
+      interviewlayer.addLayer(marker)
       }
   
   }
 }
 // Transforms real addresses into coordinates
 
-async function forwardGeocoding(query) {
+async function forwardGeocoding(query, sheet) {
   return await opencage
-  .geocode({ q: query, key: '5bdd3087b76540c9a5ed866dad8aa271' })
+  .geocode({ q: query, key: sheet[61]['Name'] })
   .then((data) => {
     if (data.status.code === 200 && data.results.length > 0) {
       const place = data.results[0];
-      console.log(place.formatted);
+      /*console.log(place.formatted);
       console.log(place.geometry);
-      console.log(place.annotations.timezone.name);
+      console.log(place.annotations.timezone.name);*/
       return place
     } else {
       console.log('Status', data.status.message);
@@ -300,9 +320,9 @@ async function forwardGeocoding(query) {
 
 /* TODO: 
 - create club category and add fields in db for clubs and arcade
-- add people as well?
 - standardize dates in google sheet to prevent problems with slider 
-- hide api key either in google sheet or encrypted here
+- find solution for the double list of parameters
+- payment for geocoding api
 */
 
 
