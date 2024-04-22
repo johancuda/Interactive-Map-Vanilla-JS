@@ -84,7 +84,7 @@ const LeafIcon = L.Icon.extend({
 
 const customIcon = new LeafIcon({iconUrl: "img/icon.png"})
 
-
+// To use the icon:
 // const marker1 = L.marker([51.5, -0.09], {time: "2013-01-22 08:42:26+01", icon: customIcon});
 
 
@@ -197,9 +197,9 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
   const programmer = sheet[i]['Programmer'];
   const source1 = sheet[i]['Source1'];
   const source2 = sheet[i]['Source2'];
-  const lat = sheet[i]['Lat'];
-  const long = sheet[i]['Long'];
-  const category = sheet[i]['Category']
+  let lat = sheet[i]['Lat'];
+  let long = sheet[i]['Long'];
+  const category = sheet[i]['Category'];
   const address = sheet[i]['Address'];
   const sgg = sheet[i]['SGG'];
 
@@ -218,26 +218,41 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
       popup_text += `<p class="popup_title">${title}</p>`
   }
 
-// Doesn't work at the moment, see comment below.
+// creates marker with address or not
   if(address) {
-    position = forwardGeocoding(address)
-    console.log(position)
-    //lat = position.lat
-    //long = position.lng
+    console.log(address)
+    forwardGeocoding(address).then((place) => {
+      //const position = geometry
+      if (place) {
+      lat = place.geometry.lat
+      console.log(lat)
+      long = place.geometry.lng
+      console.log(long)
+      createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer)
+      }
+      else {
+        console.log("Problème d'adresse")
+      }
+    })
     popup_text += `Address : ${address}`
+  } else {
+    createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer)
   }
 
-  
+// Creates singular marker and popup
+
+function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer) {
+
+  // Create popup text
   for(let i=0; i < params.length; i++) {
-      if (params[i]) {
-          popup_text += `<p>${params_name[i]} : ${params[i]}</p>`
-      }
+    if (params[i]) {
+        popup_text += `<p>${params_name[i]} : ${params[i]}</p>`
+    }
   }
 
   // Create marker and binds Popup
-  
   const marker = L.marker([lat, long], {time: date})
-  
+
   marker.bindPopup(popup_text)
 
   // Adds marker to marker_list variable
@@ -253,13 +268,11 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer) {
       }
   
   }
-
-
-
+}
 // Transforms real addresses into coordinates
 
 async function forwardGeocoding(query) {
-  await opencage
+  return await opencage
   .geocode({ q: query, key: '5bdd3087b76540c9a5ed866dad8aa271' })
   .then((data) => {
     if (data.status.code === 200 && data.results.length > 0) {
@@ -267,9 +280,11 @@ async function forwardGeocoding(query) {
       console.log(place.formatted);
       console.log(place.geometry);
       console.log(place.annotations.timezone.name);
+      return place
     } else {
       console.log('Status', data.status.message);
       console.log('total_results', data.total_results);
+      return null
     }
   })
   .catch((error) => {
@@ -287,6 +302,7 @@ async function forwardGeocoding(query) {
 - create club category and add fields in db for clubs and arcade
 - add people as well?
 - standardize dates in google sheet to prevent problems with slider 
+- hide api key either in google sheet or encrypted here
 */
 
 

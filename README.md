@@ -29,6 +29,8 @@ Data are fetched from a Google Sheet and then used to create de map dynamically.
 - "Source 2"
 - "Lat"
 - "Long"
+- "Category"
+- "Address"
 - "SGG"
 
 Popups are then created when the fields are not empty.
