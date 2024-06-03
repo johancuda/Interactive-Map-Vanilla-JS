@@ -26,7 +26,6 @@ async function getSheet() {
  function handleResponse(csvText) {
   let sheetObjects = csvToObjects(csvText);
   // sheetObjects is now an Array of Objects
-  console.log(sheetObjects);
   sheet = sheetObjects
 }
 
@@ -113,6 +112,8 @@ for(let i=0; i < sheet.length; i++) {
 
 
 // Layer for the slider
+
+console.log(marker_list)
 
 const sliderlayer = L.layerGroup(marker_list)
 
@@ -232,8 +233,7 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewla
 
 // creates marker with address or not
   if(address) {
-    console.log(address)
-    forwardGeocoding(address, sheet).then((place) => {
+    forwardGeocoding(address).then((place) => {
       if (place) {
       lat = place.geometry.lat
       long = place.geometry.lng
@@ -254,6 +254,9 @@ function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, 
 
   // Create popup text
   for(let i=0; i < params.length; i++) {
+    /*if(params[i] == source1 || source2){
+      popup_text += `<p>${params_name[i]} : <a href="${params[i]}">${params[i]}</a></p>`
+    } else */ 
     if (params[i]) {
         popup_text += `<p>${params_name[i]} : ${params[i]}</p>`
     }
@@ -291,9 +294,9 @@ function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, 
 }
 // Transforms real addresses into coordinates
 
-async function forwardGeocoding(query, sheet) {
+async function forwardGeocoding(query) {
   return await opencage
-  .geocode({ q: query, key: sheet[61]['Name'] })
+  .geocode({ q: query, key: "5bdd3087b76540c9a5ed866dad8aa271" })
   .then((data) => {
     if (data.status.code === 200 && data.results.length > 0) {
       const place = data.results[0];
@@ -322,7 +325,10 @@ async function forwardGeocoding(query, sheet) {
 - create club category and add fields in db for clubs and arcade
 - standardize dates in google sheet to prevent problems with slider 
 - find solution for the double list of parameters
-- payment for geocoding api
+- note coordinates from API in doc
+- standardize dates
+- voir obsidion pour solution slider layer qui a pas tous les markers
+- problème changement de layer!
 */
 
 
