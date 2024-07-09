@@ -78,17 +78,11 @@ const LeafIcon = L.Icon.extend({
         iconSize:     [35, 40],
     }
 });
-/*
-const interviewIcon = new LeafIcon({iconUrl: "img/interview_logo.png"})
 
-const gameIcon = new LeafIcon({iconUrl: "img/game_logo.png"})
-
-const arcadeIcon = new LeafIcon({iconUrl: "img/arcade_logo.png"})
-*/
 const icons = {
-  interviewIcon: new LeafIcon({iconUrl: "img/interview_logo.png"}),
-  gameIcon : new LeafIcon({iconUrl: "img/game_logo.png"}),
-  arcadeIcon : new LeafIcon({iconUrl: "img/arcade_logo.png"})
+	interviewIcon: new LeafIcon({iconUrl: "img/interview_logo.png"}),
+	gameIcon : new LeafIcon({iconUrl: "img/game_logo.png"}),
+	arcadeIcon : new LeafIcon({iconUrl: "img/arcade_logo.png"})
 
 }
 
@@ -155,31 +149,36 @@ const sliderControl = L.control.sliderControl({layer:sliderlayer, range: true});
 // To make slider appear/disappear with the right layer
 
 map.on('overlayadd', function(e) {
+  console.log(e)
     let layer_name = e.name
     let checkboxes = document.querySelectorAll('[type = "checkbox"]')
+    console.log(checkboxes)
 
     if (layer_name == "Slider layer"){
 
       // Remove other overlays when slider layer is activated
-        console.log(checkboxes)
         for(let i =0; i<checkboxes.length-1; i++) {
-          checkboxes[i].checked = false
+        	checkboxes[i].checked = false
         }
         map.addControl(sliderControl);
         sliderControl.startSlider();
       // needs correction !!
     } else if (layer_name == "Game test" || layer_name == "Arcade test" || layer_name == "Interview layer") {
       let slider = checkboxes[checkboxes.length-1]
-      slider.checked = false
+      if(slider.checked) {
+        slider.checked = false
+        map.removeControl(sliderControl)
+      }
     }
 
 })
 
 map.on('overlayremove', function(e) {
+
     let layer_name = e.name
 
     if(layer_name == "Slider layer"){
-    map.removeControl(sliderControl)
+    	map.removeControl(sliderControl)
     }
 })
 
@@ -222,8 +221,8 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewla
 
   // List of parameters and their names
   
-  const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long, sgg, duration, interviewer, interview_type]
-  const params_name = ["Country","Date","Description", "Platform 1", "Platform 2", "Platform 3", "Platform 4", "Genres", "Studio", "Publisher", "Programmer", "Source 1", "Source 2", "Lat", "Long", "SGG", "Duration", "Interviewer", "Type of interview"]
+  const params = [country,date,description, platform1, platform2, platform3, platform4, genres, studio, publisher, programmer, source1, source2, lat, long,address, sgg, duration, interviewer, interview_type]
+  const params_name = ["Country","Date","Description", "Platform 1", "Platform 2", "Platform 3", "Platform 4", "Genres", "Studio", "Publisher", "Programmer", "Source 1", "Source 2", "Lat", "Long", "Address", "SGG", "Duration", "Interviewer", "Type of interview"]
   
   // Create Popup entry only if data exists
 
@@ -231,8 +230,8 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewla
       popup_text += `<p class="popup_title">${title}</p>`
   }
 
-// creates marker with address or not
-  if(address) {
+// creates marker with address or not --> uses forward geocoding (not needed if all markers have lat and log in db sheet)
+  /*if(address) {
     forwardGeocoding(address).then((place) => {
       if (place) {
       lat = place.geometry.lat
@@ -246,7 +245,9 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewla
     popup_text += `Address : ${address}`
   } else {
     createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
-  }
+  }*/
+
+  createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
 
 // Creates singular marker and popup
 
@@ -322,12 +323,12 @@ async function forwardGeocoding(query) {
 
 
 /* TODO: 
-- create club category and add fields in db for clubs and arcade
-- standardize dates in google sheet to prevent problems with slider 
+- create club category and add fields in db for clubs and arcade DONE
+- standardize dates in google sheet to prevent problems with slider DONE
 - find solution for the double list of parameters
-- note coordinates from API in doc
-- standardize dates
-- voir obsidion pour solution slider layer qui a pas tous les markers
+- note coordinates from API in doc DONE
+- standardize dates DONE
+- voir obsidion pour solution slider layer qui a pas tous les markers DONE
 - problème changement de layer!
 */
 
