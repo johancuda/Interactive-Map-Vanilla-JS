@@ -137,7 +137,6 @@ mcgLayerSupportGroup.checkIn(sliderlayer)
 mcgLayerSupportGroup.addTo(map)
 
 
-
 // Add groups to map
 
 const layerControl = L.control.layers(baselayer, overlays).addTo(map)
@@ -182,6 +181,35 @@ map.on('overlayremove', function(e) {
     }
 })
 
+  // **Add the search control**
+  const searchControl = new L.Control.Search({
+    layer: sliderlayer, // Target the sliderlayer
+    propertyName: 'title', // Use the property where marker names are stored
+    marker: false, // Disable auto-highlighting markers
+    moveToLocation: function (latlng, title, map) {
+      map.setView(latlng, 15); // Adjust the zoom level when a result is selected
+    },
+    filterData: function (text, records) {
+      const filtered = {};
+      const lowerCaseText = text.toLowerCase();
+  
+      for (const key in records) {
+        // Check if the input text appears anywhere in the marker's title
+        if (key.toLowerCase().includes(lowerCaseText)) {
+          filtered[key] = records[key];
+        }
+      }
+      return filtered;
+    },
+  });
+
+  // Add search control to the map
+  map.addControl(searchControl);
+
+  // Event listener for search result selection
+  searchControl.on('search:locationfound', function (e) {
+    if (e.layer._popup) e.layer.openPopup(); // Open the marker popup
+  });
 
 }
 
@@ -247,11 +275,11 @@ function createMarker(sheet, marker_list, i, gamelayer, arcadelayer, interviewla
     createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
   }*/
 
-  createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons)
+  createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons, title)
 
 // Creates singular marker and popup
 
-function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons) {
+function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, marker_list, category, gamelayer, arcadelayer, interviewlayer, icons, title) {
 
   // Create popup text
   for(let i=0; i < params.length; i++) {
@@ -268,11 +296,11 @@ function createMarkerAndPopup(params, params_name, popup_text, lat, long, date, 
 
   // Create marker and binds Popup (with different icon if interview)
   if (category == 'interview') {
-    marker = L.marker([lat, long], {time: date, icon: icons.interviewIcon})
+    marker = L.marker([lat, long], {time: date, icon: icons.interviewIcon, title: title})
   } else if( category == 'game') {
-    marker = L.marker([lat, long], {time: date, icon: icons.gameIcon})
+    marker = L.marker([lat, long], {time: date, icon: icons.gameIcon, title: title})
   } else if (category == 'arcade') {
-    marker = L.marker([lat, long], {time: date, icon: icons.arcadeIcon})
+    marker = L.marker([lat, long], {time: date, icon: icons.arcadeIcon, title: title})
   }
 
   marker.bindPopup(popup_text)
